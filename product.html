@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>cart</title>
+</head>
+
+<body>
+  <nav class="navbar" style="padding: 15px 30px; border-bottom: 2px solid black;">
+    <div class="container-fluid" style="display: flex; justify-content: space-between; align-items: center;">
+      <div
+        style="font-size: 32px; font-weight: bold; color: #00b3b3; text-decoration: none; display: flex; align-items: center;">
+        click
+        <span
+          style="border: 2px solid black; color: #00b3b3; padding: 2px 4px; margin: 0 4px; box-shadow: 3px 2px 0 black;">N</span>
+        <span style="color: #00b3b3;">cart</span>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: center; margin-left: 40px;">
+        <div style="color: black; font-weight: 500; font-size: 14px;">WOMEN</div>
+        <div style="color: black; font-weight: 500; font-size: 14px;">MEN</div>
+        <div style="color: black; font-weight: 500; font-size: 14px;">KIDS</div>
+        <div style="color: black; font-weight: 500; font-size: 14px;">HOME</div>
+        <div style="color: black; font-weight: 500; font-size: 14px;">BRANDS</div>
+        <div style="color: black; font-weight: 500; font-size: 14px;">SALE</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; align-items: center; border-bottom: 1px solid black; padding-bottom: 3px;">
+          <span style="margin-right: 5px;">🔍</span>
+          <input type="text" placeholder="Search" style="border: none; outline: none; padding: 5px; width: 120px;">
+        </div>
+        <span style="font-size: 30px; cursor: pointer;">♡</span>
+        <span style="font-size: 30px; cursor: pointer;">👤</span>
+
+        <a href="product.html" style="text-decoration: none;">
+          <span style="font-size: 30px; cursor: pointer;">🛒</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+  <a href="clickNcart.html" style="text-decoration: none; font-weight: bold; font-size: 16px;">
+    ⬅ Go Back to Main Page
+  </a>
+
+
+  <h2>Your Cart</h2>
+  <div id="cart-container" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
+  <h3 id="total-price" style="margin-top: 20px;"></h3>
+  <button onclick="clearCart()"
+    style="padding: 10px 20px; margin-top: 10px; background: red; color: white; border: none; border-radius: 5px;">Clear
+    Cart</button>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function saveCart() {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function updateCartDisplay() {
+      const container = document.getElementById('cart-container');
+      container.innerHTML = "";
+
+      if (cart.length === 0) {
+        container.innerHTML = "<p>Your cart is empty.</p>";
+        document.getElementById('total-price').textContent = "";
+        return;
+      }
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const price = parseInt(item.price);
+        const quantity = item.quantity || 1;
+        total += price * quantity;
+
+        const card = document.createElement('div');
+        card.style = "border: 1px solid #ccc; border-radius: 10px; width: 200px; padding: 15px; text-align: center;";
+
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 10px;">
+          <h3>${item.name}</h3>
+          <p>Price: ₹${price}</p>
+          <div>
+            Qty:
+            <button onclick="changeQuantity(${index}, -1)">−</button>
+            ${quantity}
+            <button onclick="changeQuantity(${index}, 1)">+</button>
+          </div>
+          <button onclick="removeItem(${index})" style="margin-top: 10px; background: crimson; color: white; padding: 5px 10px; border: none; border-radius: 5px;">Remove</button>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('total-price').textContent = "Total: ₹" + total;
+    }
+
+    function changeQuantity(index, change) {
+      if (!cart[index].quantity) cart[index].quantity = 1;
+      cart[index].quantity += change;
+      if (cart[index].quantity < 1) cart[index].quantity = 1;
+      saveCart();
+      updateCartDisplay();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      saveCart();
+      updateCartDisplay();
+    }
+
+    function clearCart() {
+      localStorage.removeItem('cart');
+      cart = [];
+      updateCartDisplay();
+    }
+
+    updateCartDisplay();
+  </script>
+</body>
+
+</html>
